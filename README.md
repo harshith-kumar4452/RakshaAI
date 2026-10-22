@@ -2,6 +2,7 @@
 
 JUSTra streamlines workplace harassment complaint intake for HR, compliance, and victim-support teams. Victims can file reports without authentication, receive a unique `JUST-XXXX` case ID, upload evidence, and finish a guided triage chat powered by Groq LLMs. HR and compliance operators get normalized case data, AI-derived severity/urgency scores, and auto-updated Supabase records for downstream dashboards and tools.
 
+## Live Demo :https://raksha-ai-theta.vercel.app/
 ## Highlights
 - **Authentication-free intake** – victims only share a phone number for OTP verification and can remain anonymous thereafter.
 - **Smart NLP pre-screening** – [lib/token-utils.js](lib/token-utils.js) computes temporal/location/specificity scores to decide whether triage follow-ups are required.
