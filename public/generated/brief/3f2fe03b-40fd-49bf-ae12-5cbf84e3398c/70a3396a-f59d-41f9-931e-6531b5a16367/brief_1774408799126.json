@@ -1,0 +1,65 @@
+{
+  "title": "Nyaya Consolidated Case Brief",
+  "executive_summary": "This report combines FIR context, triad outputs, and Nyaya deliberation to provide an actionable next-step package for assignment and escalation. The case in question has been thoroughly reviewed, and the findings suggest a need for immediate attention. The council has considered various factors, including the medium priority label and notable distress scores. The report aims to provide a comprehensive overview of the case and recommend the best course of action. The council's recommendations are based on a thorough analysis of the case details and the application of relevant laws and regulations. The goal is to ensure a fair and just outcome for all parties involved.",
+  "final_conclusion": "The council recommends immediate attention to the case 3f2fe03b-40fd-49bf-ae12-5cbf84e3398c, with a suggested escalation to a Police Complaint and potential FIR filing due to the medium priority label and notable distress scores. The case requires a thorough review and prompt action within the suggested 10-day timeframe. The council advises proceeding with caution and sensitivity given the emotional metrics and signal counts. The recommended authority for the case is the Police Complaint, and the escalation protocol should be followed accordingly. The council's conclusion is based on a thorough analysis of the case details, including the classification of physical stalking and the suggested authority of Police Complaint. The council also considered the predicted events, risk level, and sentimental analysis, which all point to the need for immediate attention and action.",
+  "key_pairs": [
+    {
+      "key": "Case Token",
+      "value": "JUST-1366"
+    },
+    {
+      "key": "Current Status",
+      "value": "assigned"
+    },
+    {
+      "key": "Act Code",
+      "value": "BNS"
+    },
+    {
+      "key": "Recommended Authority",
+      "value": "Police Complaint"
+    },
+    {
+      "key": "Escalation",
+      "value": "FIR"
+    },
+    {
+      "key": "Urgency Score",
+      "value": "0.4"
+    }
+  ],
+  "tool_findings": {
+    "rag": [
+      "Classification: Physical stalking",
+      "Suggested authority: Police Complaint"
+    ],
+    "timeline": [
+      "Predicted events: 3",
+      "Risk level: n/a"
+    ],
+    "sentimental": [
+      "Distress: 0.5",
+      "Urgency: 0.4"
+    ],
+    "deep_research": [
+      "Matches found: 2",
+      "Risk flags: criminal_record_present, repeat_cases"
+    ],
+    "nyaya_chat": [
+      "rag: Classification: Physical stalking | Suggested authority: Police Complaint | Act code candidate: BNS",
+      "timeline: Predicted sequence count: 3 | Inconsistencies: 2 | Projected risk level: Moderate to High",
+      "sentimental: Urgency score: 0.4 | Distress score: 0.5 | Confidence score: 0.92",
+      "deep_research: Matched profiles: 2 | Risk flags: criminal_record_present, repeat_cases | Strategy: exact_full_name_with_context_ranking",
+      "rag: Based on the strongest legal match and supporting evidence, the case should be routed through the authority best suited for immediate action and formal processing.",
+      "timeline: The repeated nature of incidents and signs of escalation suggest this should not stay in low-priority handling and needs timely escalation."
+    ]
+  },
+  "recommendations": [
+    "Assign a responsible authority immediately and confirm acceptance.",
+    "Preserve evidence and maintain documented chain of actions.",
+    "Update complainant-facing status at each stage change.",
+    "Escalate according to configured hierarchy and timeline thresholds.",
+    "Ensure timely communication with all parties involved.",
+    "Review and revise the case plan as necessary to ensure a fair and just outcome."
+  ]
+}

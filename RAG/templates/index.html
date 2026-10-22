@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JustRAG - Entity Relationship Graph</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .container {
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .graph-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #graph {
+            width: 100%;
+            height: 100%;
+            background: white;
+        }
+
+        .pipeline-status {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pipeline-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .stage-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stage-name {
+            font-weight: 500;
+        }
+
+        .stage-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .status-running {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .status-completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-error {
+            background: #f44336;
+            color: white;
+        }
+
+        .status-idle {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .log-info {
+            color: #4caf50;
+        }
+
+        .log-error {
+            color: #f44336;
+        }
+
+        .log-timestamp {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .filter-section {
+            margin-top: 20px;
+        }
+
+        .filter-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .filter-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-item:hover {
+            background: #e9ecef;
+        }
+
+        .filter-item.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JustRAG - Legal Knowledge Graph</h1>
+            <div class="stats" id="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Total Chunks</div>
+                    <div class="stat-value" id="statChunks">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Entities</div>
+                    <div class="stat-value" id="statEntities">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Relationships</div>
+                    <div class="stat-value" id="statRels">0</div>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="btnIngest">Start Ingestion</button>
+                <button id="btnRefresh">Refresh Graph</button>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search entities..." />
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="pipeline-status">
+                    <div class="pipeline-header">Ingestion Pipeline</div>
+                    <div id="pipelineStatus">
+                        <div class="stage-status status-idle">Idle</div>
+                    </div>
+                    <div class="progress-bar" style="display: none;" id="progressBar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry">Ready. Click "Start Ingestion" to begin.</div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Filter by Act</h3>
+                    <div id="actFilters"></div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Filter by Entity Type</h3>
+                    <div id="typeFilters"></div>
+                </div>
+            </div>
+
+            <div class="graph-container">
+                <div id="graph"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let network = null;
+        let allNodes = [];
+        let allEdges = [];
+        let statusInterval = null;
+
+        // Initialize the graph
+        function initGraph() {
+            const container = document.getElementById('graph');
+            const data = {
+                nodes: new vis.DataSet([]),
+                edges: new vis.DataSet([])
+            };
+
+            const options = {
+                nodes: {
+                    shape: 'dot',
+                    size: 16,
+                    font: {
+                        size: 12,
+                        color: '#333'
+                    },
+                    borderWidth: 2,
+                    shadow: true
+                },
+                edges: {
+                    width: 2,
+                    color: { inherit: 'from' },
+                    smooth: {
+                        type: 'continuous',
+                        roundness: 0.5
+                    },
+                    arrows: {
+                        to: { enabled: true, scaleFactor: 0.5 }
+                    },
+                    font: {
+                        size: 10,
+                        align: 'middle'
+                    }
+                },
+                groups: {
+                    'Section': { color: { background: '#667eea', border: '#5568d3' } },
+                    'Offence': { color: { background: '#f44336', border: '#d32f2f' } },
+                    'Punishment': { color: { background: '#ff9800', border: '#f57c00' } },
+                    'Authority': { color: { background: '#4caf50', border: '#388e3c' } },
+                    'Victim': { color: { background: '#2196f3', border: '#1976d2' } },
+                    'Platform': { color: { background: '#9c27b0', border: '#7b1fa2' } },
+                    'Act': { color: { background: '#607d8b', border: '#455a64' } }
+                },
+                physics: {
+                    enabled: true,
+                    stabilization: {
+                        iterations: 100
+                    },
+                    barnesHut: {
+                        gravitationalConstant: -80000,
+                        springConstant: 0.001,
+                        springLength: 200
+                    }
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 100,
+                    navigationButtons: true,
+                    keyboard: true
+                }
+            };
+
+            network = new vis.Network(container, data, options);
+        }
+
+        // Load graph data
+        async function loadGraphData() {
+            try {
+                const response = await fetch('/api/graph-data');
+                const data = await response.json();
+
+                allNodes = data.nodes;
+                allEdges = data.edges;
+
+                network.setData({
+                    nodes: new vis.DataSet(allNodes),
+                    edges: new vis.DataSet(allEdges)
+                });
+
+                updateFilters();
+            } catch (error) {
+                console.error('Error loading graph:', error);
+            }
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+
+                document.getElementById('statChunks').textContent = data.total_chunks;
+                document.getElementById('statEntities').textContent = data.total_entities;
+                document.getElementById('statRels').textContent = data.total_relationships;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Start ingestion
+        async function startIngestion() {
+            const btn = document.getElementById('btnIngest');
+            btn.disabled = true;
+            btn.textContent = 'Ingesting...';
+
+            try {
+                await fetch('/api/start-ingestion', { method: 'POST' });
+                startStatusPolling();
+            } catch (error) {
+                console.error('Error starting ingestion:', error);
+                btn.disabled = false;
+                btn.textContent = 'Start Ingestion';
+            }
+        }
+
+        // Poll ingestion status
+        function startStatusPolling() {
+            if (statusInterval) clearInterval(statusInterval);
+
+            statusInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/status');
+                    const status = await response.json();
+
+                    updatePipelineStatus(status);
+                    updateLogs(status.logs);
+
+                    if (status.status === 'completed' || status.status === 'error') {
+                        clearInterval(statusInterval);
+                        document.getElementById('btnIngest').disabled = false;
+                        document.getElementById('btnIngest').textContent = 'Start Ingestion';
+                        loadGraphData();
+                        loadStats();
+                    }
+                } catch (error) {
+                    console.error('Error polling status:', error);
+                }
+            }, 1000);
+        }
+
+        // Update pipeline status display
+        function updatePipelineStatus(status) {
+            const container = document.getElementById('pipelineStatus');
+            const progress = status.progress;
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+
+            let html = `<div class="stage-status status-${status.status}">${status.status.toUpperCase()}</div>`;
+
+            if (status.current_act) {
+                html += `<div style="margin-top: 10px;"><strong>Current:</strong> ${status.current_act}</div>`;
+            }
+
+            if (progress.total_acts > 0) {
+                const percent = (progress.completed_acts / progress.total_acts) * 100;
+                html += `<div style="margin-top: 10px;"><strong>Progress:</strong> ${progress.completed_acts}/${progress.total_acts} acts</div>`;
+
+                progressBar.style.display = 'block';
+                progressFill.style.width = `${percent}%`;
+            } else {
+                progressBar.style.display = 'none';
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Update logs display
+        function updateLogs(logs) {
+            const container = document.getElementById('logContainer');
+            container.innerHTML = logs.map(log => {
+                const time = new Date(log.timestamp).toLocaleTimeString();
+                const cssClass = log.level === 'error' ? 'log-error' : 'log-info';
+                return `<div class="log-entry ${cssClass}">
+                    <span class="log-timestamp">[${time}]</span> ${log.message}
+                </div>`;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Update filters
+        function updateFilters() {
+            const acts = [...new Set(allNodes.map(n => n.group))];
+            const types = [...new Set(allNodes.map(n => n.type))];
+
+            const actFilters = document.getElementById('actFilters');
+            actFilters.innerHTML = acts.map(act =>
+                `<div class="filter-item" data-filter="act" data-value="${act}">${act}</div>`
+            ).join('');
+
+            const typeFilters = document.getElementById('typeFilters');
+            typeFilters.innerHTML = types.map(type =>
+                `<div class="filter-item" data-filter="type" data-value="${type}">${type}</div>`
+            ).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.filter-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    applyFilters();
+                });
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const activeActFilters = [...document.querySelectorAll('[data-filter="act"].active')]
+                .map(el => el.dataset.value);
+            const activeTypeFilters = [...document.querySelectorAll('[data-filter="type"].active')]
+                .map(el => el.dataset.value);
+
+            let filteredNodes = allNodes;
+            let filteredEdges = allEdges;
+
+            if (activeActFilters.length > 0) {
+                filteredNodes = filteredNodes.filter(n => activeActFilters.includes(n.group));
+            }
+
+            if (activeTypeFilters.length > 0) {
+                filteredNodes = filteredNodes.filter(n => activeTypeFilters.includes(n.type));
+            }
+
+            const nodeIds = new Set(filteredNodes.map(n => n.id));
+            filteredEdges = filteredEdges.filter(e => nodeIds.has(e.from) && nodeIds.has(e.to));
+
+            network.setData({
+                nodes: new vis.DataSet(filteredNodes),
+                edges: new vis.DataSet(filteredEdges)
+            });
+        }
+
+        // Search functionality
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = e.target.value.toLowerCase();
+
+                if (!query) {
+                    network.setData({
+                        nodes: new vis.DataSet(allNodes),
+                        edges: new vis.DataSet(allEdges)
+                    });
+                    return;
+                }
+
+                const matchingNodes = allNodes.filter(n =>
+                    n.label.toLowerCase().includes(query) ||
+                    n.title.toLowerCase().includes(query)
+                );
+
+                const nodeIds = new Set(matchingNodes.map(n => n.id));
+                const matchingEdges = allEdges.filter(e =>
+                    nodeIds.has(e.from) && nodeIds.has(e.to)
+                );
+
+                network.setData({
+                    nodes: new vis.DataSet(matchingNodes),
+                    edges: new vis.DataSet(matchingEdges)
+                });
+            }, 300);
+        });
+
+        // Event listeners
+        document.getElementById('btnIngest').addEventListener('click', startIngestion);
+        document.getElementById('btnRefresh').addEventListener('click', () => {
+            loadGraphData();
+            loadStats();
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initGraph();
+            loadGraphData();
+            loadStats();
+        });
+    </script>
+</body>
+</html>

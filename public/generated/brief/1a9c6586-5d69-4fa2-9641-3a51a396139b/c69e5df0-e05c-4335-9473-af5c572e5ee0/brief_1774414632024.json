@@ -1,0 +1,63 @@
+{
+  "title": "Nyaya Consolidated Case Brief",
+  "executive_summary": "This report combines FIR context, triad outputs, and Nyaya deliberation to provide an actionable next-step package for assignment and escalation. The case involves physical stalking and potential criminal intimidation, requiring a timely and effective response. The victim's safety is a top priority, and the report aims to provide a comprehensive package for addressing the situation. The report is based on the analysis of the provided context, tool findings, and Nyaya deliberation. The goal is to ensure a prompt and appropriate response to the victim's situation. The report highlights the need for immediate action and escalation to the relevant authorities.",
+  "final_conclusion": "Route the case to the Police Complaint department to address the physical stalking and potential criminal intimidation, ensuring the victim's safety and providing a timely response. The Police Complaint department is best equipped to handle the situation, given the severity of the incident and the need for police involvement. The routing decision is supported by the rag, timeline, and sentimental assessments, which all point to the need for immediate action and escalation. The deep research assessment also supports this decision, despite no matches being found for the accused. The victim's distress and fear necessitate a prompt and effective response, and the Police Complaint department is the most suitable authority to provide this. The case should be assigned to a responsible authority immediately, and the complainant-facing status should be updated at each stage change. The configured hierarchy and timeline thresholds should be followed for escalation.",
+  "key_pairs": [
+    {
+      "key": "Case Token",
+      "value": "JUST-6292"
+    },
+    {
+      "key": "Current Status",
+      "value": "submitted"
+    },
+    {
+      "key": "Act Code",
+      "value": "BNS"
+    },
+    {
+      "key": "Recommended Authority",
+      "value": "Police Complaint"
+    },
+    {
+      "key": "Escalation",
+      "value": "FIR"
+    },
+    {
+      "key": "Urgency Score",
+      "value": "0.8"
+    }
+  ],
+  "tool_findings": {
+    "rag": [
+      "Classification: Physical stalking",
+      "Suggested authority: Police Complaint"
+    ],
+    "timeline": [
+      "Predicted events: 3",
+      "Risk level: n/a"
+    ],
+    "sentimental": [
+      "Distress: 0",
+      "Urgency: 0.8"
+    ],
+    "deep_research": [
+      "Matches found: 0",
+      "Risk flags: "
+    ],
+    "nyaya_chat": [
+      "rag: Based on the provided context, the case should be routed to the Police Complaint department as it involves physical stalking and potential criminal intimidation.",
+      "timeline: I agree with rag's assessment, and considering the high risk projection and potential for escalation, it's essential to involve the Police Complaint department to ensure the victim's safety.",
+      "sentimental: The victim is experiencing significant distress and fear, which supports the decision to route the case to the Police Complaint department to provide a timely and effective response.",
+      "deep_research: Although no matches were found for the accused, Vikram Saini, the routing decision should still be based on the severity of the incident and the need for police involvement, as suggested by the rag and timeline assessments."
+    ]
+  },
+  "recommendations": [
+    "Assign a responsible authority immediately and confirm acceptance.",
+    "Preserve evidence and maintain documented chain of actions.",
+    "Update complainant-facing status at each stage change.",
+    "Escalate according to configured hierarchy and timeline thresholds.",
+    "Ensure timely communication with the victim and provide regular updates.",
+    "Review and revise the case plan as necessary to ensure the victim's safety and effective resolution."
+  ]
+}
